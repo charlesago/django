@@ -1,0 +1,10 @@
+{% extends 'website/base.html' %}
+
+{% block content %}
+
+<h1>salut</h1>
+<p>{{ message.title }}</p>
+<p>{{ message.content }}</p>
+<a href="{% url 'delete_message' message.id %}">SUPPRIMER</a>
+
+{% endblock %}
