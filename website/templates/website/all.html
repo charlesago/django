@@ -1,29 +1,26 @@
 {% extends 'website/base.html' %}
 
+{% load static %}
 {% block content %}
 
 
-
-
+<div class="container mb-5">
 <h1>Voici les messages</h1>
-
+</div>
 {% for message in messages %}
-<p>----------</p>
+<div class="container">
+<div class="border border-5 mt-5">
+    <div class="text-center">
+
 <h3>Votre Message</h3>
 
     <p>{{ message.title }}</p>
    <p>{{ message.content }}</p>
-<a href="{% url 'show_message' message.id %}">voir</a>
+<a href="{% url 'show_message' message.id %}" class="btn btn-primary">voir</a>
+    </div>
+</div>
+    </div>
 
-<p>----------------</p>
 
 {% endfor %}
-
-<h2>Ajouter un message</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">VALIDER</button>
-</form>
-
 {% endblock %}

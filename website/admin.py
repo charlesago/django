@@ -1,4 +1,9 @@
 from django.contrib import admin
+from .models import Message, User, Category, Response
 
-from.models import Message
+# Register your models here.
+
 admin.site.register(Message)
+admin.site.register(User)
+admin.site.register(Category)
+admin.site.register(Response)

@@ -1,0 +1,10 @@
+{% extends 'website/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <h1 class="mt-3">Modifier une réponse</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-success" type="submit">VALIDER</button>
+    </form>
+{% endblock %}

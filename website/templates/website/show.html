@@ -1,10 +1,47 @@
 {% extends 'website/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
+<div class="container">
+<div class="border border-5 mt-5">
+    <div class="text-center">
 
-<h1>salut</h1>
-<p>{{ message.title }}</p>
-<p>{{ message.content }}</p>
-<a href="{% url 'delete_message' message.id %}">SUPPRIMER</a>
+<h3>Votre Message</h3>
 
+        <p>category : {{ message.category.name }}</p>
+    <p>{{ message.title }}</p>
+   <p>{{ message.content }}</p>
+
+        {% if request.user == message.author %}
+             <a href="{% url 'delete_message' message.id %}" class="btn btn-danger">SUPPRIMER</a>
+            <a href="{% url 'edit_message' message.id %}" class="btn btn-warning">EDIT</a>
+        {% endif %}
+    </div>
+</div>
+    </div>
+
+      <hr>
+    <hr>
+    <div class="border border-dark">
+    {% for response in message.response_set.all %}
+
+        <div class="border border-dark">
+        <p>{{ response.author.username }} wrote : </p>
+            <p><strong>{{ response.content }}</strong></p>
+             {% if request.user == response.author %}
+            <a href="{% url 'edit_response_message' response.id %}" class="btn btn-warning">EDIT</a>
+            <a href="{% url 'delete_response_message' response.id %}" class="btn btn-danger">SUPPRIMER</a>
+            {% endif %}
+        </div>
+
+    {% endfor %}
+    </div>
+    <hr>
+    <form action="{% url 'response_message' message.id %}" method="post" class="form">
+    {% csrf_token %}
+        {{ responseForm|crispy }}
+        <button type="submit" class="btn btn-success">respond</button>
+    </form>
+
+    <hr>
 {% endblock %}
