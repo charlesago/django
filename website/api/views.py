@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from website.api.serializers import MessageSerializer
 from website.models import Message, Category, User
 
@@ -23,36 +24,48 @@ def get_message(request, id):
     return Response(serialized_message.data)
 
 
+@permission_classes([IsAuthenticated])
 @api_view(['POST'])
 def create_message(request):
     if request.method == 'POST':
         newMessage = Message()
-        newMessage.author = User.objects.get(id=1)
-
+        user = request.user.id
+        newMessage.author = User.objects.get(id=user)
         message = MessageSerializer(instance=newMessage, data=request.data)
 
         if message.is_valid():
             message.save()
             return Response(message.data)
-    return None
+    return Response('error')
 
-@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@api_view(['PUT', 'PATCH'])
+def update_Message(request, id):
+    if request.method == 'PUT' or request.method == 'PATCH':
+        message = Message.objects.get(id=id)
+        user = request.user.id
 
-def login(request):
-    if request.method == 'POST':
+        if message.author.id != user:
+            return Response('Vous n\'êtes pas autorisé à mettre à jour ce message.')
 
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        serializer = MessageSerializer(instance=message, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response('Erreur de validation des données')
 
-        try:
-            user = User.objects.get(username=username)
-        except:
-            return Response()
+    return Response('Méthode non autorisée')
 
-        user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            login(request, user)
+@permission_classes([IsAuthenticated])
+@api_view(['DELETE'])
+def delete_Message(request,id):
+    message = Message.objects.get(id=id)
+    user = request.user.id
 
-        return Response()
+    if message and message.author.id == user:
+        message.delete()
+        return Response('message delete')
+
+    return Response('Error')
 
